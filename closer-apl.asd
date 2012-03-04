@@ -4,4 +4,5 @@
   :serial t
   :depends-on (named-readtables)
   :components ((:file "packages")
-               (:file "closer-apl")))
+               (:file "closer-apl")
+               (:file "printing")))

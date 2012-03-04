@@ -49,7 +49,40 @@
 (set-macro-character #\≠ (constantly '/=))
 (set-macro-character #\≤ (constantly '<=))
 (set-macro-character #\≥ (constantly '>=))
+(set-macro-character #\⊨ (constantly t))
 (set-macro-character #\∅ (constantly ()))
+(set-macro-character #\∈ (constantly 'member))
+(set-macro-character #\⋀ (constantly 'and))
+(set-macro-character #\⋁ (constantly 'or))
+(set-macro-character #\⋃ (constantly 'append))
+(set-macro-character #\⊂ (constantly 'subsetp ))
+(set-macro-character #\~ (constantly 'equal))
+(set-macro-character #\≈ (constantly 'equalp))
+(set-macro-character #\^ (constantly 'expt))
+(set-macro-character #\→ (constantly 'setf))
+
+
+(defun ∉ (x list &rest args)
+    ¬(apply #'member x list args))
+
+(defun ∣ (a b)
+    (= (rem a b) 0))
+
+(defun ∤ (a b)
+    (> (rem a b) 0))
+
+(defun ∛ (x)
+    (^ x 1/3))
+
+(defun ∜ (x)
+    (^ x 1/4))
+
+(defun ≉ (x y)
+   ¬(~ x y))
+
+(defun ≁ (x y)
+   ¬ (≈ x y))
+
 
 ;;; 
 ;;; ∃ n ∈ (1 2 3 4 5): (evenp n) => T
