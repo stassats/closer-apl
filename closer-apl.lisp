@@ -27,6 +27,16 @@
                                (read-char stream t nil t)
                                (error 'reader-error :stream stream))))))
 
+(set-macro-character #\| (get-macro-character #\)))
+(set-macro-character #\|
+                     (lambda (stream char)
+                       (declare (ignore char))
+                       (prog1 `(abs ,(read stream t nil t))
+                         (let ((char (peek-char t stream t nil t)))
+                           (if (char= char #\|)
+                               (read-char stream t nil t)
+                               (error 'reader-error :stream stream))))))
+
 (set-macro-character #\√
                      (lambda (stream char)
                        (declare (ignore char))
@@ -60,3 +70,82 @@
                                  (read stream t nil t))))
                          `(some (lambda (,variable) ,expression) ',list))))
 
+(set-macro-character #\∀
+                     (lambda (stream char)
+                       (declare (ignore char))
+                       (let ((variable (read stream t nil t))
+                             (list
+                               (progn
+                                 (assert (char= #\∈ (peek-char t stream t nil t)))
+                                 (read-char stream t nil t)
+                                 (read stream t nil t)))
+                             (expression
+                               (progn
+                                 (assert (char= #\: (peek-char t stream t nil t)))
+                                 (read-char stream t nil t)
+                                 (read stream t nil t))))
+                         `(every (lambda (,variable) ,expression) ',list))))
+
+(set-macro-character #\{
+                     (lambda (stream char)
+                       (declare (ignore char))
+                       (let* ((variable (read stream t nil t))
+                              (natural-p
+                                (progn
+                                  (assert (char= #\∈ (peek-char t stream t nil t)))
+                                  (read-char stream t nil t)
+                                  (when (char= #\ℕ (peek-char t stream t nil t))
+                                    (read-char stream t nil t)
+                                    t)))
+                              (list
+                                (or natural-p
+                                    (read stream t nil t)))
+                              (expression
+                                (progn
+                                  (assert (char= #\: (peek-char t stream t nil t)))
+                                  (read-char stream t nil t)
+                                  (read stream t nil t))))
+                         (assert (char= #\} (peek-char t stream t nil t)))
+                         (read-char stream t nil t)
+                         (if natural-p
+                             `(loop for ,variable from 1
+                                    while ,expression
+                                    collect ,variable)
+                             `(loop for ,variable in ',list
+                                    when ,expression
+                                    collect ,variable)))))
+
+(set-macro-character #\∑
+                     (lambda (stream char)
+                       (declare (ignore char))
+                       (let* ((variable (read stream t nil t))
+                              (from (progn
+                                      (assert (char= #\= (peek-char t stream t nil t)))
+                                      (read-char stream t nil t)
+                                      (read stream t nil t)))
+                              (to (progn
+                                      (assert (char= #\→ (peek-char t stream t nil t)))
+                                      (read-char stream t nil t)
+                                      (read stream t nil t)))
+                              (expression (read stream t nil t)))
+                         `(loop for ,variable from ,from to ,to
+                                sum ,expression))))
+
+(set-macro-character #\∏
+                     (lambda (stream char)
+                       (declare (ignore char))
+                       (let* ((variable (read stream t nil t))
+                              (from (progn
+                                      (assert (char= #\= (peek-char t stream t nil t)))
+                                      (read-char stream t nil t)
+                                      (read stream t nil t)))
+                              (to (progn
+                                      (assert (char= #\→ (peek-char t stream t nil t)))
+                                      (read-char stream t nil t)
+                                      (read stream t nil t)))
+                              (expression (read stream t nil t))
+                              (result-sym (gensym)))
+                         `(loop for ,variable from ,from to ,to
+                                for ,result-sym = ,expression
+                                then (* ,result-sym ,expression)
+                                finally (return ,result-sym)))))
