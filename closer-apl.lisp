@@ -182,3 +182,27 @@
                                 for ,result-sym = ,expression
                                 then (* ,result-sym ,expression)
                                 finally (return ,result-sym)))))
+
+(defun read-until (char stream)
+  (with-output-to-string (out)
+    (loop for input-char = (read-char stream)
+	  until (char= char input-char)
+	  do (write-char input-char out))))
+
+(set-macro-character
+ #\[
+ (lambda (stream char)
+   (declare (ignore char))
+   (let* ((string (read-until #\] stream))
+	  (comma (position #\, string))
+	  (dots (search ".." string))
+	  (start (parse-integer string :end (or comma dots)))
+	  (step (if comma
+		    (- (parse-integer string :start (1+ comma)
+                                             :end dots)
+		       start)
+		    1))
+	  (end (parse-integer string :start (+ dots 2))))
+     (list 'quote
+	   (loop for i from start to end by step
+		 collect i)))))
