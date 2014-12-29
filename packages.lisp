@@ -3,7 +3,24 @@
 (defpackage #:closer-apl
   (:nicknames #:apl)
   (:use #:cl)
-  (:export ))
+  (:export apl
+           ∉
+           ∣
+           ∤
+           ∛
+           ∜
+           ≉
+           ≁
 
-(named-readtables:defreadtable :apl
-  (:merge :standard))
+           |\|-reader|
+           |{-reader|
+           |[-reader|
+
+           ⌊-READER
+           ⌈-READER
+           √-READER
+           ¬-READER
+           ∃-READER
+           ∀-READER
+           ∑-READER
+           ∏-READER))
