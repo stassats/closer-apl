@@ -37,31 +37,7 @@
   (declare (ignore char))
   `(not ,(read stream t nil t)))
 
-(defun ∉ (x list &rest args)
-  ¬(apply #'member x list args))
-
-(defun ∣ (a b)
-  (= (rem a b) 0))
-
-(defun ∤ (a b)
-  (> (rem a b) 0))
-
-(defun ∛ (x)
-  (^ x 1/3))
-
-(defun ∜ (x)
-  (^ x 1/4))
-
-(defun ≉ (x y)
-  ¬(~ x y))
-
-(defun ≁ (x y)
-  ¬(≈ x y))
-
-
-;;;
 ;;; ∃ n ∈ (1 2 3 4 5): (evenp n) => T
-
 (defun ∃-reader (stream char)
   (declare (ignore char))
   (let ((variable (read stream t nil t))
@@ -178,7 +154,7 @@
 (flet ((rdelim (stream char)
          (declare (ignore stream char))
          (get-macro-character #\))))
-  (named-readtables:defreadtable :apl
+  (named-readtables:defreadtable apl
     (:merge :standard)
     (:macro-char #\⌋ #'rdelim)
     (:macro-char #\⌊ #'⌊-reader)

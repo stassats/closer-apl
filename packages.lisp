@@ -3,7 +3,7 @@
 (defpackage #:closer-apl
   (:nicknames #:apl)
   (:use #:cl)
-  (:export :apl
+  (:export apl
            ∉
            ∣
            ∤
